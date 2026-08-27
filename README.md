@@ -53,12 +53,14 @@ pip install -r requirements.txt
 ### 3. Configure Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Go to **Project Settings -> API** and copy the **Project URL** and an **API key** (anon key for read-mostly/public use, service_role key only for trusted server-side use — never ship the service_role key to a browser).
+2. Go to **Project Settings -> API** and copy the **Project URL** and an **API key** (publishable/anon key for read-mostly/public use, service_role key only for trusted server-side use — never ship the service_role key to a browser).
 3. Copy `.env.example` to `.env` and fill in `SUPABASE_URL`, `SUPABASE_KEY`, and `SUPABASE_TABLE`.
 
 ```bash
 cp .env.example .env
 ```
+
+4. Create the table: open the Supabase Dashboard -> **SQL Editor** -> New query, paste the contents of [`data/schema.sql`](data/schema.sql), and run it. This creates the `items` table and Row Level Security policies that let the app's publishable/anon key read and write it (Supabase blocks all access by default until policies exist). The policies are intentionally permissive for local dev — tighten them before using this with real/public data.
 
 Alternatively, for deployment on Streamlit Community Cloud, put the same values in `.streamlit/secrets.toml` (already gitignored) instead of `.env`.
 

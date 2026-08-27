@@ -16,9 +16,10 @@ venv/
 .venv/
 *.egg-info/
 
-# Data artifacts (keep the folder, ignore generated contents)
+# Data artifacts (keep the folder + schema, ignore generated contents)
 data/*
 !data/.gitkeep
+!data/schema.sql
 
 # OS / editor
 .DS_Store
