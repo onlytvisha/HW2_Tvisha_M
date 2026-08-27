@@ -1,30 +1,44 @@
 """Central place for environment-driven configuration.
 
-Loads variables from a local .env file (via python-dotenv) and exposes
-them as plain module attributes so the rest of the app never touches
-os.environ directly.
+Loads variables from a local .env file (via python-dotenv) when running
+locally, and falls back to st.secrets when running on Streamlit
+Community Cloud (which exposes the dashboard's Secrets box that way,
+not as plain environment variables). Either way, the rest of the app
+reads plain module attributes here instead of touching os.environ or
+st.secrets directly.
 """
 
 import os
 
+import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def _get(key: str, default=None):
+    if key in os.environ:
+        return os.environ[key]
+    try:
+        return st.secrets[key]
+    except Exception:
+        return default
+
+
 # --- Supabase ---
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-SUPABASE_TABLE = os.environ.get("SUPABASE_TABLE", "items")
+SUPABASE_URL = _get("SUPABASE_URL")
+SUPABASE_KEY = _get("SUPABASE_KEY")
+SUPABASE_TABLE = _get("SUPABASE_TABLE", "items")
 
 # --- Modal ---
 # Modal's own auth normally lives in ~/.modal.toml (set via `modal token new`
 # or `modal token set`), but these let a deployment inject credentials
 # through environment variables / Streamlit secrets instead.
-MODAL_TOKEN_ID = os.environ.get("MODAL_TOKEN_ID")
-MODAL_TOKEN_SECRET = os.environ.get("MODAL_TOKEN_SECRET")
+MODAL_TOKEN_ID = _get("MODAL_TOKEN_ID")
+MODAL_TOKEN_SECRET = _get("MODAL_TOKEN_SECRET")
 
 # --- App ---
-APP_ENV = os.environ.get("APP_ENV", "development")
+APP_ENV = _get("APP_ENV", "development")
 
 
 def require_supabase_config() -> None:
