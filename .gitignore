@@ -1,0 +1,26 @@
+# Environment variables / secrets
+.env
+.env.local
+.streamlit/secrets.toml
+
+# Modal auth (created by `modal token new` / `modal token set`)
+.modal.toml
+modal.toml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+*.egg-info/
+
+# Data artifacts (keep the folder, ignore generated contents)
+data/*
+!data/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

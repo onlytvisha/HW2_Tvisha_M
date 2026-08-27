@@ -1,0 +1,6 @@
+streamlit>=1.37
+supabase>=2.5
+python-dotenv>=1.0
+modal>=0.63
+pandas>=2.2
+plotly>=5.22
