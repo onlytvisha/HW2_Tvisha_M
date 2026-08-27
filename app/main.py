@@ -5,6 +5,13 @@ Run with:
 """
 
 import json
+import sys
+from pathlib import Path
+
+# `streamlit run app/main.py` only puts this file's directory (app/) on
+# sys.path, not the project root, so the sibling config/ and utils/
+# packages need to be added explicitly.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd
 import plotly.express as px
@@ -26,7 +33,7 @@ tab_browse, tab_insert, tab_update, tab_delete = st.tabs(
 
 with tab_browse:
     st.subheader(f"Rows in `{table}`")
-    limit = st.slider("Row limit", 10, 500, 100, step=10)
+    limit = st.slider("Row limit", 10, 100, 100, step=10)
     if st.button("Refresh", key="refresh"):
         st.cache_data.clear()
 
