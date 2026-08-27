@@ -18,7 +18,7 @@ import plotly.express as px
 import streamlit as st
 
 from config.settings import SUPABASE_TABLE
-from utils.supabase_client import delete_rows, fetch_rows, insert_row, update_rows
+from utils.supabase_client import delete_rows, fetch_rows, insert_row
 
 st.set_page_config(page_title="Supabase + Streamlit", layout="wide")
 
@@ -27,9 +27,7 @@ st.title("Supabase + Streamlit")
 table = st.sidebar.text_input("Table name", value=SUPABASE_TABLE)
 st.sidebar.caption("Reads SUPABASE_TABLE from .env as the default.")
 
-tab_browse, tab_insert, tab_update, tab_delete = st.tabs(
-    ["Browse", "Insert", "Update", "Delete"]
-)
+tab_browse, tab_insert, tab_delete = st.tabs(["Browse", "Insert", "Delete"])
 
 with tab_browse:
     st.subheader(f"Rows in `{table}`")
@@ -68,24 +66,6 @@ with tab_insert:
             st.cache_data.clear()
         except Exception as exc:
             st.error(f"Insert failed: {exc}")
-
-with tab_update:
-    st.subheader(f"Update rows in `{table}`")
-    col1, col2 = st.columns(2)
-    with col1:
-        match_column = st.text_input("Match column", value="id")
-        match_value = st.text_input("Match value")
-    with col2:
-        update_json = st.text_area(
-            "Fields to update (JSON)", value='{\n  "name": "new value"\n}', height=120
-        )
-    if st.button("Update row(s)"):
-        try:
-            update_rows(table, match_column, match_value, json.loads(update_json))
-            st.success("Row(s) updated.")
-            st.cache_data.clear()
-        except Exception as exc:
-            st.error(f"Update failed: {exc}")
 
 with tab_delete:
     st.subheader(f"Delete rows from `{table}`")
