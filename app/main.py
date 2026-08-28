@@ -17,7 +17,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from config.settings import SUPABASE_TABLE
+from config.settings import SUPABASE_TABLE, SUPABASE_URL
+from utils.modal_client import run_heavy_computation
 from utils.supabase_client import delete_rows, fetch_rows, insert_row
 
 st.set_page_config(page_title="Supabase + Streamlit", layout="wide")
@@ -27,7 +28,9 @@ st.title("Supabase + Streamlit")
 table = st.sidebar.text_input("Table name", value=SUPABASE_TABLE)
 st.sidebar.caption("Reads SUPABASE_TABLE from .env as the default.")
 
-tab_browse, tab_insert, tab_delete = st.tabs(["Browse", "Insert", "Delete"])
+tab_browse, tab_insert, tab_delete, tab_compute = st.tabs(
+    ["Browse", "Insert", "Delete", "Compute (Modal)"]
+)
 
 with tab_browse:
     st.subheader(f"Rows in `{table}`")
@@ -79,3 +82,22 @@ with tab_delete:
             st.cache_data.clear()
         except Exception as exc:
             st.error(f"Delete failed: {exc}")
+
+with tab_compute:
+    st.subheader(f"Run aggregation on `{table}` via Modal")
+    st.caption(
+        "Offloads the summary stats to a Modal function (`heavy_computation`), "
+        "which reads Supabase itself using the `custom-secret` Modal secret."
+    )
+    if st.button("Run on Modal"):
+        try:
+            with st.spinner("Calling Modal..."):
+                result = run_heavy_computation(SUPABASE_URL, table)
+            st.success(f"{result['row_count']} rows, {len(result['columns'])} columns")
+            if result["summary"]:
+                st.json(result["summary"])
+        except Exception as exc:
+            st.error(
+                f"Modal call failed: {exc}\n\n"
+                "Make sure `modal deploy utils/modal_functions.py` has been run."
+            )
