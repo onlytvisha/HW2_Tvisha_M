@@ -32,10 +32,14 @@ SUPABASE_TABLE = _get("SUPABASE_TABLE", "items")
 
 # --- Modal ---
 # Modal's own auth normally lives in ~/.modal.toml (set via `modal token new`
-# or `modal token set`), but these let a deployment inject credentials
-# through environment variables / Streamlit secrets instead.
+# or `modal token set`), which isn't available on Streamlit Community Cloud.
+# There, set MODAL_TOKEN_ID / MODAL_TOKEN_SECRET in .streamlit/secrets.toml;
+# the modal SDK itself only checks os.environ, so re-export them here for it.
 MODAL_TOKEN_ID = _get("MODAL_TOKEN_ID")
 MODAL_TOKEN_SECRET = _get("MODAL_TOKEN_SECRET")
+if MODAL_TOKEN_ID and MODAL_TOKEN_SECRET:
+    os.environ.setdefault("MODAL_TOKEN_ID", MODAL_TOKEN_ID)
+    os.environ.setdefault("MODAL_TOKEN_SECRET", MODAL_TOKEN_SECRET)
 
 # --- App ---
 APP_ENV = _get("APP_ENV", "development")
