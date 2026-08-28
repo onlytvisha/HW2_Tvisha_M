@@ -4,7 +4,6 @@ A starter project that combines:
 - **Streamlit** for the UI
 - **Supabase** as the database/backend
 - **Modal** for offloading heavy/serverless compute out of the Streamlit process
-   - https://modal.com/secrets/onlytvisha/main/custom-secret
 
 ## Project structure
 
